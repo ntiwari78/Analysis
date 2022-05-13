@@ -1,11 +1,44 @@
+- [All Reports](#all-reports)
+  * [ET Newsletter Performance Report](#et-newsletter-performance-report)
+    + [About  This report is used to analyze the performance of each newsletter over each month in the last quarter](#about--this-report-is-used-to-analyze-the-performance-of-each-newsletter-over-each-month-in-the-last-quarter)
+    + [Query 1](#query-1)
+    + [Query 2](#query-2)
+  * [Newsletter Performance daywise](#newsletter-performance-daywise)
+    + [It helps to analyze the number of users, newsletter sent,open and clicks for each newsletter day wise for last 15 days](#it-helps-to-analyze-the-number-of-users--newsletter-sent-open-and-clicks-for-each-newsletter-day-wise-for-last-15-days)
+    + [Query 1](#query-1-1)
+    + [Query 2](#query-2-1)
+  * [Group Subscription Dashboard](#group-subscription-dashboard)
+    + [It helps us to analyze the behavior and engagement of users of group subscriptions on different metrics](#it-helps-us-to-analyze-the-behavior-and-engagement-of-users-of-group-subscriptions-on-different-metrics)
+    + [Sample Queries](#sample-queries)
+    + [Query 1](#query-1-2)
+    + [Query 2](#query-2-2)
+    + [Query 3](#query-3)
+  * [RFV Analysis for Paid Users](#rfv-analysis-for-paid-users)
+    + [About This report is used to analyze the behavior of paid users based on their RFV month on month](#about-this-report-is-used-to-analyze-the-behavior-of-paid-users-based-on-their-rfv-month-on-month)
+    + [Query 1](#query-1-3)
+    + [Query 2](#query-2-3)
+    + [Query 3](#query-3-1)
+  * [User_score to show frequency and recency pattern for users](#user-score-to-show-frequency-and-recency-pattern-for-users)
+  * [Users Direct & Organic Engagement On Articles](#users-direct---organic-engagement-on-articles)
+    + [About This report is used to find the user base and page views by the users on a day level](#about-this-report-is-used-to-find-the-user-base-and-page-views-by-the-users-on-a-day-level)
+    + [Query](#query)
+  * [Paid User Engagement](#paid-user-engagement)
+    + [Query](#query-1)
+  * [Subscriptions](#subscriptions)
+    + [Query 1](#query-1-4)
+    + [Query 2](#query-2-4)
+    + [Query 3](#query-3-2)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 # All Reports
 
-## 1. ET Newsletter Performance Report
+## ET Newsletter Performance Report
 
-### About: This report is used to analyze the performance of each newsletter over each month in the last quarter 
+### About  This report is used to analyze the performance of each newsletter over each month in the last quarter 
 as well as on a weekly level and last three to four days.
 
-### Query-1:
+### Query 1
 ~~~
 select 
   * 
@@ -571,7 +604,7 @@ from
   )
 ~~~ 
 
-### Query-2:
+### Query 2
 ~~~
 select 
   *, 
@@ -1091,11 +1124,11 @@ order by
 
 ~~~
 
-## Newsletter Performance daywise:
+## Newsletter Performance daywise
 
-### About: It helps to analyze the number of users, newsletter sent,open and clicks for each newsletter day wise for last 15 days
+### It helps to analyze the number of users, newsletter sent,open and clicks for each newsletter day wise for last 15 days
 
-### Query-1:
+### Query 1
 ~~~
 select 
   a.c_date, 
@@ -1243,7 +1276,7 @@ from
 ~~~
  
  
-### Query-2:
+### Query 2
 ~~~
 select 
   a.c_date, 
@@ -1390,11 +1423,11 @@ from
 
 ~~~
 
-## Group Subscription Dashboard:
+## Group Subscription Dashboard
 
-### About: It helps us to analyze the behavior and engagement of users of group subscriptions on different metrics:
-### Sample Queries:
-### Query-1:
+### It helps us to analyze the behavior and engagement of users of group subscriptions on different metrics
+### Sample Queries
+### Query 1
 ~~~
 Select 
   Group_Name, 
@@ -1729,7 +1762,7 @@ order by
   Group_Name
 
 ~~~
-### Query-2:
+### Query 2
 ~~~
 select 
   * 
@@ -2034,7 +2067,7 @@ limit
 
 ~~~
 
-### Query-3:
+### Query 3
 ~~~
 select 
   * 
@@ -2911,10 +2944,10 @@ from
 
 ~~~
  
-## RFV Analysis for Paid Users:
+## RFV Analysis for Paid Users
 
-### About: This report is used to analyze the behavior of paid users based on their RFV month on month
-### Query-1:
+### About This report is used to analyze the behavior of paid users based on their RFV month on month
+### Query 1
 ~~~
 select 
   email, 
@@ -2942,7 +2975,7 @@ from
   `et-poc-042021.paid.users_score`
 
 ~~~
-### Query-2:
+### Query 2
  
 ~~~
 select 
@@ -2998,7 +3031,7 @@ order by
   a.email
 
 ~~~
-### Query-3:
+### Query 3
 ~~~
 select 
   a.email, 
@@ -3044,12 +3077,12 @@ order by
   a.email
 
 ~~~
-## Table usage: User_score to show frequency and recency pattern for users
+## User_score to show frequency and recency pattern for users
 ## Users Direct & Organic Engagement On Articles
 
-## About: This report is used to find the user base and page views by the users on a day level
+### About This report is used to find the user base and page views by the users on a day level
 
-### Query:
+### Query
 ~~~
 select 
   c_date, 
@@ -3103,10 +3136,11 @@ order by
   c_date desc
 
 ~~~
-## Paid User Engagement:
-## About: This report helps to analyze the behavior of users based on different parameters like active days, volume,time of activity, type of articles, based on session, based on newsletter engagement ,user’s bucket , platform etc on monthly,weekly and daily comparison
-
-### Query:
+## Paid User Engagement
+~~~
+ About: This report helps to analyze the behavior of users based on different parameters like active days, volume,time of activity, type of articles, based on session, based on newsletter engagement ,user’s bucket , platform etc on monthly,weekly and daily comparison
+~~~
+### Query
 ~~~
 select 
   C1, 
@@ -8581,11 +8615,11 @@ order by
   ord asc
 
 ~~~
-## Subscriptions:
-
+## Subscriptions
+~~~
 ## About: This report is used to analyze both the B2B and B2C Subscriptions number based on different platform, different plans, on different methods like retargeting on daily, weekly, monthly and quarterly level
-
-### Query-1:
+~~~
+### Query 1
 ~~~
 SELECT 
   * 
@@ -8753,7 +8787,7 @@ LIMIT
   20000000
 
 ~~~
-### Query-2
+### Query 2
 ~~~
 SELECT 
   * 
@@ -8915,7 +8949,7 @@ LIMIT
 
 ~~~
 
-### Query-3:
+### Query 3
 ~~~
 SELECT 
   * 
