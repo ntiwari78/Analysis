@@ -1,6 +1,28 @@
-## Query-1:
+- [ADHOC QUERIES](#adhoc-queries)
+  * [Query 1 To find the engagement of users who subscribed in jan](#query-1--objective--to-find-the-engagement-of-users-who-subscribed-in-jan)
+  * [Query-2: Objective: To find the Newsletter engagement  and section wise engagement of users who subscribed in jan](#query-2--objective--to-find-the-newsletter-engagement--and-section-wise-engagement-of-users-who-subscribed-in-jan)
+  * [Query-3: Objective: Day Wise Engagement of yearly plan paid users in March 2021](#query-3--objective--day-wise-engagement-of-yearly-plan-paid-users-in-march-2021)
+  * [Query-4: Objective: Query is used to analyze what behavior of users help to increase propensity to convert on different metrics:](#query-4--objective--query-is-used-to-analyze-what-behavior-of-users-help-to-increase-propensity-to-convert-on-different-metrics-)
+  * [Query-5: Objective: To find the daywise users on mweb unique based on there email and gid](#query-5--objective--to-find-the-daywise-users-on-mweb-unique-based-on-there-email-and-gid)
+  * [Query-6: Objective: Queries used to find  list of users with email and phone number who left ET being free loyal users from Dec till march](#query-6--objective--queries-used-to-find--list-of-users-with-email-and-phone-number-who-left-et-being-free-loyal-users-from-dec-till-march)
+  * [Query-7: Objective: Queries used to find list of free loyal retained users from Dec 21 to Mar 22](#query-7--objective--queries-used-to-find-list-of-free-loyal-retained-users-from-dec-21-to-mar-22)
+  * [Query-8: Objective: Queries used to Analyze the movement of users from one user engagement bucket to another in different months](#query-8--objective--queries-used-to-analyze-the-movement-of-users-from-one-user-engagement-bucket-to-another-in-different-months)
+  * [Query-9: Objective: Query used to generate the links which is used on different pages on  desktop which in return increase the visibility of pages on web browsers](#query-9--objective--query-used-to-generate-the-links-which-is-used-on-different-pages-on--desktop-which-in-return-increase-the-visibility-of-pages-on-web-browsers)
+  * [Final Query for interlinking data](#final-query-for-interlinking-data)
+  * [Query-13: Objective: To Analyze the behavior of loyal free users based on Source wise](#query-13--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-source-wise)
+  * [Query-14: Objective: To Analyze the behavior of loyal free users based on Site section wise excluding app](#query-14--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-site-section-wise-excluding-app)
+  * [Query-15: Objective: To Analyze the behavior of loyal free users based on Page Template wise excluding app](#query-15--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-page-template-wise-excluding-app)
+  * [Query-16: Objective: To Analyze the behavior of loyal free users based on there Events](#query-16--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-there-events)
+  * [Query-17: Objective: To Analyze the behavior of loyal free users based on there Recency, frequency and Volume](#query-17--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-there-recency--frequency-and-volume)
+  * [Query-18: Objective: To Choose users who should be given free subscription which in return help us in engagement increasing loyalty and also would not target our subscription revenue](#query-18--objective--to-choose-users-who-should-be-given-free-subscription-which-in-return-help-us-in-engagement-increasing-loyalty-and-also-would-not-target-our-subscription-revenue)
+  * [Query-19: Objective: Timesprime expired users analysis](#query-19--objective--timesprime-expired-users-analysis)
+  * [Query-20: Objective: Queries to analyze the impact of migration of portfolio db to follow db](#query-20--objective--queries-to-analyze-the-impact-of-migration-of-portfolio-db-to-follow-db)
+  * [Query-21: Objective: Query Used to analyze the traffic on homepage and how many free and paid users are reading articles from home page](#query-21--objective--query-used-to-analyze-the-traffic-on-homepage-and-how-many-free-and-paid-users-are-reading-articles-from-home-page)
+  * [Query-22: Objective: Query Used to analyze engagement of paid users on App](#query-22--objective--query-used-to-analyze-engagement-of-paid-users-on-app)
 
-## Objective: To find the engagement of users who subscribed in jan 
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+## Query-1: Objective: To find the engagement of users who subscribed in jan 
 ~~~
 select 
   a.c_date, 
@@ -813,9 +835,7 @@ from
 
 ~~~
 
-## Query-2:
-
-## Objective: To find the Newsletter engagement  and section wise engagement of users who subscribed in jan 
+## Query-2: Objective: To find the Newsletter engagement  and section wise engagement of users who subscribed in jan 
 ~~~
 Select 
   user_email, 
@@ -1099,9 +1119,7 @@ from
 
 ~~~
  
-## Query-3:
-
-## Objective: Day Wise Engagement of yearly plan paid users in March 2021
+## Query-3: Objective: Day Wise Engagement of yearly plan paid users in March 2021
 ~~~
 select 
   a.c_date, 
@@ -1930,9 +1948,7 @@ from
 
 ~~~
 
-## Query-4:
-
-## Objective: Query is used to analyze what behavior of users help to increase propensity to convert on different metrics:
+## Query-4: Objective: Query is used to analyze what behavior of users help to increase propensity to convert on different metrics:
 ~~~
 select 
   f.gid, 
@@ -2639,9 +2655,7 @@ where
     '00000000-0000-0000-0000-000000000000’)
 
 ~~~
-## Query-5:
-
-## Objective: To find the daywise users on mweb unique based on there email and gid
+## Query-5: Objective: To find the daywise users on mweb unique based on there email and gid
 ~~~
 select 
   c_date, 
@@ -2708,9 +2722,7 @@ order by
 
 ~~~
 
-## Query-6:
-
-## Objective: Queries used to find  list of users with email and phone number who left ET being free loyal users from Dec till march
+## Query-6: Objective: Queries used to find  list of users with email and phone number who left ET being free loyal users from Dec till march
 ~~~
 select 
   a.user, 
@@ -3238,9 +3250,7 @@ group by
   2
 
 ~~~
-## Query-7:
-
-## Objective: Queries used to find list of free loyal retained users from Dec 21 to Mar 22
+## Query-7: Objective: Queries used to find list of free loyal retained users from Dec 21 to Mar 22
 ~~~
 select 
   a.user, 
@@ -3412,9 +3422,7 @@ group by
   2
 
 ~~~
-## Query-8:
-
-## Objective: Queries used to Analyze the movement of users from one user engagement bucket to another in different months
+## Query-8: Objective: Queries used to Analyze the movement of users from one user engagement bucket to another in different months
 
 ~~~
 select 
@@ -3636,9 +3644,7 @@ from
   ) b on a.user = b.user
 
 ~~~
-## Query-9:
-
-## Objective: Query used to generate the links which is used on different pages on  desktop which in return increase the visibility of pages on web browsers
+## Query-9: Objective: Query used to generate the links which is used on different pages on  desktop which in return increase the visibility of pages on web browsers
 
 ## Interlinking query
 ~~~ 
@@ -5546,9 +5552,7 @@ group by 1,2,3) group by 1,2
 order by 1,2
 ~~~ 
  
-## Query-13:
-
-## Objective: To Analyze the behavior of loyal free users based on Source wise
+## Query-13: Objective: To Analyze the behavior of loyal free users based on Source wise
  
 ~~~ 
 select mon,source,count(*) from
@@ -5585,9 +5589,7 @@ group by 1,2,3)b on a.user=b.user and a.mon=b.mon
 group by 1,2,3) group by 1,2
 order by 1,2
 ~~~ 
-## Query-14:
-
-# Objective: To Analyze the behavior of loyal free users based on Site section wise excluding app
+## Query-14: Objective: To Analyze the behavior of loyal free users based on Site section wise excluding app
 ~~~ 
 select mon,site_section,count(*) as users from
 (select a.mon,a.user,site_section from
@@ -5626,9 +5628,7 @@ group by 1,2,3) group by 1,2
 order by 1,3 desc
 ~~~ 
  
-## Query-15:
-
-## Objective: To Analyze the behavior of loyal free users based on Page Template wise excluding app
+## Query-15: Objective: To Analyze the behavior of loyal free users based on Page Template wise excluding app
  
 ~~~ 
 select mon,page_template,count(*) from
@@ -5667,9 +5667,7 @@ group by 1,2,3)b on a.user=b.user and a.mon=b.mon
 group by 1,2,3) group by 1,2
 order by 1,3 desc
 ~~~ 
-## Query-16:
-
-## Objective: To Analyze the behavior of loyal free users based on there Events
+## Query-16: Objective: To Analyze the behavior of loyal free users based on there Events
 
 ~~~
 select mon,event_category,count(*) from
@@ -5711,9 +5709,7 @@ order by 1,3 desc
 ~~~ 
  
  
-## Query-17:
-
-## Objective: To Analyze the behavior of loyal free users based on there Recency, frequency and Volume 
+## Query-17: Objective: To Analyze the behavior of loyal free users based on there Recency, frequency and Volume 
  
 ~~~ 
 select a.mon,a.user,frequency,recency,volume,sessions from
@@ -5772,9 +5768,7 @@ where a.user is not null and a.user not in ('-','null'))b on a.mon=b.mon and a.u
 order by 1
 ~~~ 
  
-## Query-18:
-
-## Objective: To Choose users who should be given free subscription which in return help us in engagement increasing loyalty and also would not target our subscription revenue
+## Query-18: Objective: To Choose users who should be given free subscription which in return help us in engagement increasing loyalty and also would not target our subscription revenue
  
 ~~~ 
  
@@ -5895,9 +5889,7 @@ group by 1,2,3,4,5,6,7
  
 ~~~ 
  
-## Query-19:
-
-## Objective: Timesprime expired users analysis
+## Query-19: Objective: Timesprime expired users analysis
  
 ~~~ 
 select user_email,act_days,articles from
@@ -5939,9 +5931,7 @@ on a.gid=b.gid
 group by 1,2,3) group by 1,2) group by 1)c on a.user_email=c.email
 ~~~ 
  
-## Query-20:
-
-## Objective: Queries to analyze the impact of migration of portfolio db to follow db
+## Query-20: Objective: Queries to analyze the impact of migration of portfolio db to follow db
  
 ~~~ 
 select email from
@@ -6033,9 +6023,7 @@ order by 1
 
 ~~~
 
-## Query-21:
-
-## Objective: Query Used to analyze the traffic on homepage and how many free and paid users are reading articles from home page
+## Query-21: Objective: Query Used to analyze the traffic on homepage and how many free and paid users are reading articles from home page
 ~~~
 select mon,last_click_source,user_type,count(*) as users,sum(Total_articles_read) as Total_articles_read from
 (select extract(Month from c_date) as mon,user,user_type,last_click_source,sum(volume) as Total_articles_read from
@@ -6066,9 +6054,7 @@ order by 1,2,4
 
 
 
-## Query-22:
-
-## Objective: Query Used to analyze engagement of paid users on App
+## Query-22: Objective: Query Used to analyze engagement of paid users on App
 
 ~~~
 select 
