@@ -1,656 +1,588 @@
 ~~~
-SELECT
-	*
-EXCEPT
-(properties),
-CASE
-	WHEN properties = 'mail_sent' THEN 'Sent'
-	WHEN properties = 'mail_open' THEN 'Open'
-	WHEN properties = 'mail_click' THEN 'Click'
-	WHEN properties = 'users' THEN 'Users'
-	WHEN properties = 'open_percent' THEN 'Open Rate'
-	WHEN properties = 'click_open_percent' THEN 'Click To Open Rate'
-END AS properties,
-CASE
-	WHEN properties = 'mail_sent' THEN 1
-	WHEN properties = 'mail_open' THEN 2
-	WHEN properties = 'mail_click' THEN 3
-	WHEN properties = 'users' THEN 4
-	WHEN properties = 'open_percent' THEN 5
-	WHEN properties = 'click_open_percent' THEN 6
-END AS prop_id
-FROM
-(
-SELECT
-	*
-FROM
-	(
-	SELECT
-		nl_name,
-		mon,
-		val,
-		properties
-	FROM
-		(
-		SELECT
-			*,
-			CASE
-				WHEN mail_sent = 0 THEN 0
-				ELSE round(
-CAST(mail_open AS float64)/ CAST(mail_sent AS float64)* 100,
-				2
-)
-			END AS open_percent,
-			CASE
-				WHEN mail_open = 0 THEN 0
-				ELSE round(
-CAST(mail_click AS float64)/ CAST(mail_open AS float64)* 100,
-				2
-)
-			END AS click_open_percent
-		FROM
-			(
-			SELECT
-				a.nl_name,
-				CASE
-					WHEN c_date = current_date - 2 THEN 'D2'
-					WHEN c_date = current_date - 3 THEN 'D3'
-					WHEN c_date = current_date - 4 THEN 'D4'
-				END AS mon,
-				sum(mail_sent) AS mail_sent,
-				sum(mail_open) AS mail_open,
-				sum(mail_click) AS mail_click,
-				sum(users) AS users
-			FROM
-				(
-				SELECT
-					CAST(
-SUBSTR(
-CAST(
-datetime(__time,
-					'Asia/Kolkata') AS string
-),
-					1,
-					10
-) AS Date
-) AS c_date,
-					CASE
-						WHEN nl_name = 'News Digest'
-						AND tags IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest Static'
-						WHEN nl_name = 'News Digest'
-						AND tags NOT IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest ML Generated'
-						WHEN nl_name = 'ET RISE Biz Listings' THEN 'ET RISE'
-						ELSE nl_name
-					END AS nl_name,
-					nl_schedule_id,
-					count(*) AS mail_sent
-				FROM
-					`et-poc-042021. all_user.EtClientEvents`
-				WHERE
-					__time >= CAST(
-DATETIME_ADD(
-DATETIME_ADD(
-CAST(current_date - 5 AS datetime),
-					INTERVAL 18 HOUR
-),
-					INTERVAL 30 MINUTE
-) AS timestamp
-)
-					AND __time < CAST(
-DATETIME_ADD(
-DATETIME_ADD(
-CAST(current_date - 2 AS datetime),
-					INTERVAL 18 HOUR
-),
-					INTERVAL 30 MINUTE
-) AS timestamp
-)
-					AND client_source = 'et_newsletter'
-					AND event_name IN ('mail_sent')
-					AND nl_name NOT LIKE '%Test%'
-					AND (
-mailer_type IN ('NEWSLETTER')
-						OR nl_name IN ('News Digest')
-)
-					AND nl_name NOT IN (
-'ET Prime Promotions 2', 'ET Tech Promotional',
-'Promotional CSV Mailer: newsletter@notifications-economictimes.com',
-'ETtech Promotional Mailer', 'DeCrypt',
-'ETtech News Alert', 'On Board to ET CSV Mailer',
-'ET SmallBiz FMC', "ETPrime Today's Edition",
-'ET Promotions', 'ET Rise SME',
-'ET SmallBiz LUB', 'Unsubscription Mail',
-'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI',
-'Coronavirus Newsletter', 'ET Specials',
-'ET Specials (ET Engaged Users)',
-'ET Specials : (ALL ET Audience)',
-'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
-)
-				GROUP BY
-					1,
-					2,
-					3
-) a
-			LEFT JOIN (
-				SELECT
-					nl_name,
-					nl_schedule_id,
-					sum(mail_open) AS mail_open,
-					sum(mail_click) AS mail_click,
-					count(*) AS users
-				FROM
-					(
-					SELECT
-						CASE
-							WHEN nl_name = 'News Digest'
-								AND tags IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest Static'
-								WHEN nl_name = 'News Digest'
-									AND tags NOT IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest ML Generated'
-									WHEN nl_name = 'ET RISE Biz Listings' THEN 'ET RISE'
-									ELSE nl_name
-								END AS nl_name,
-								email,
-								nl_schedule_id,
-								sum(
-CASE WHEN event_name = 'mail_open' THEN 1 ELSE 0 END
-) AS mail_open,
-								sum(
-CASE WHEN event_name = 'mail_click' THEN 1 ELSE 0 END
-) AS mail_click
-							FROM
-								`et-poc-042021. all_user.EtClientEvents`
-							WHERE
-								__time > CAST(
-DATETIME_ADD(
-DATETIME_ADD(
-CAST(current_date - 5 AS datetime),
-								INTERVAL 18 HOUR
-),
-								INTERVAL 30 MINUTE
-) AS timestamp
-)
-									AND client_source = 'et_newsletter'
-									AND event_name IN ('mail_open', 'mail_click')
-										AND nl_name NOT LIKE '%Test%'
-										AND (
-mailer_type IN ('NEWSLETTER')
-											OR nl_name IN ('News Digest')
-)
-											AND nl_name NOT IN (
-'ET Prime Promotions 2', 'ET Tech Promotional',
-'Promotional CSV Mailer: newsletter@notifications-economictimes.com',
-'ETtech Promotional Mailer', 'DeCrypt',
-'ETtech News Alert', 'On Board to ET CSV Mailer',
-'ET SmallBiz FMC', "ETPrime Today's Edition",
-'ET Promotions', 'ET Rise SME',
-'ET SmallBiz LUB', 'Unsubscription Mail',
-'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI',
-'Coronavirus Newsletter', 'ET Specials',
-'ET Specials (ET Engaged Users)',
-'ET Specials : (ALL ET Audience)',
-'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
-)
-										GROUP BY
-											1,
-											2,
-											3
-)
-				GROUP BY
-					1,
-					2
-) b ON
-				a.nl_schedule_id = b.nl_schedule_id
-				AND CAST(a.nl_name AS string)= CAST(b.nl_name AS string)
-			GROUP BY
-				1,
-				2
-)
-		WHERE
-			mail_sent > 5
-	UNION ALL
-		SELECT
-			nl_name,
-			'last_7_days' AS mon,
-			CAST(
-round(
-CAST(mail_sent AS float64)/ CAST(DAY AS float64),
-			0
-) AS float64
-) AS mail_sent,
-			CAST(
-round(
-CAST(mail_open AS float64)/ CAST(DAY AS float64),
-			0
-) AS float64
-) AS mail_open,
-			CAST(
-round(
-CAST(mail_click AS float64)/ CAST(DAY AS float64),
-			0
-) AS float64
-) AS mail_click,
-			CAST(
-round(
-CAST(users AS float64)/ CAST(DAY AS float64),
-			0
-) AS float64
-) AS users,
-			CASE
-				WHEN mail_sent = 0 THEN 0
-				ELSE round(
-CAST(mail_open AS float64)/ CAST(mail_sent AS float64)* 100,
-				2
-)
-			END AS open_percent,
-			CASE
-				WHEN mail_open = 0 THEN 0
-				ELSE round(
-CAST(mail_click AS float64)/ CAST(mail_open AS float64)* 100,
-				2
-)
-			END AS click_open_percent
-		FROM
-			(
-			SELECT
-				nl_name,
-				sum(mail_sent) AS mail_sent,
-				sum(mail_open) AS mail_open,
-				sum(mail_click) AS mail_click,
-				sum(users) AS users,
-				sum(DAY) AS DAY
-			FROM
-				(
-				SELECT
-					nl_name,
-					CASE
-						WHEN mail_sent != 0 THEN 1
-						ELSE 0
-					END AS DAY,
-					mail_sent,
-					mail_open,
-					mail_click,
-					users
-				FROM
-					(
-					SELECT
-						c_date,
-						nl_name,
-						sum(mail_sent) AS mail_sent,
-						sum(mail_open) AS mail_open,
-						sum(mail_click) AS mail_click,
-						sum(
-CASE WHEN mail_open != 0
-OR mail_click != 0 THEN 1 ELSE 0 END
-) AS users
-					FROM
-						(
-						SELECT
-							CAST(
-SUBSTR(
-CAST(
-datetime(__time,
-							'Asia/Kolkata') AS string
-),
-							1,
-							10
-) AS Date
-) AS c_date,
-							CASE
-								WHEN nl_name = 'News Digest'
-									AND tags IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest Static'
-									WHEN nl_name = 'News Digest'
-										AND tags NOT IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest ML Generated'
-										WHEN nl_name = 'ET RISE Biz Listings' THEN 'ET RISE'
-										ELSE nl_name
-									END AS nl_name,
-									email,
-									sum(
-CASE WHEN event_name = 'mail_sent' THEN 1 ELSE 0 END
-) AS mail_sent,
-									sum(
-CASE WHEN event_name = 'mail_open' THEN 1 ELSE 0 END
-) AS mail_open,
-									sum(
-CASE WHEN event_name = 'mail_click' THEN 1 ELSE 0 END
-) AS mail_click
-								FROM
-									`et-poc-042021. all_user.EtClientEvents`
-								WHERE
-									__time >= CAST(current_date - 7 AS timestamp)
-										AND client_source = 'et_newsletter'
-										AND event_name IN (
-'mail_sent', 'mail_open', 'mail_click'
-)
-											AND nl_name NOT LIKE '%Test%'
-											AND (
-mailer_type IN ('NEWSLETTER')
-												OR nl_name IN ('News Digest')
-)
-												AND nl_name NOT IN (
-'ET Prime Promotions 2', 'ET Tech Promotional',
-'Promotional CSV Mailer: newsletter@notifications-economictimes.com',
-'ETtech Promotional Mailer', 'DeCrypt',
-'ETtech News Alert', 'On Board to ET CSV Mailer',
-'ET SmallBiz FMC', "ETPrime Today's Edition",
-'ET Promotions', 'ET Rise SME',
-'ET SmallBiz LUB', 'Unsubscription Mail',
-'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI',
-'Coronavirus Newsletter', 'ET Specials',
-'ET Specials (ET Engaged Users)',
-'ET Specials : (ALL ET Audience)',
-'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
-)
-											GROUP BY
-												1,
-												2,
-												3
-)
-					GROUP BY
-						1,
-						2
-)
-)
-			GROUP BY
-				1
-)
-		WHERE
-			mail_sent != 0
-	UNION ALL
-		SELECT
-			a.nl_name,
-			a.mon,
-			CASE
-				WHEN DAY = 0 THEN 0
-				ELSE CAST(
-round(
-CAST(mail_sent AS float64)/ CAST(DAY AS float64),
-				0
-) AS float64
-)
-			END AS mail_sent,
-			CASE
-				WHEN DAY = 0 THEN 0
-				ELSE CAST(
-round(
-CAST(mail_open AS float64)/ CAST(DAY AS float64),
-				0
-) AS float64
-)
-			END AS mail_open,
-			CASE
-				WHEN DAY = 0 THEN 0
-				ELSE CAST(
-round(
-CAST(mail_click AS float64)/ CAST(DAY AS float64),
-				0
-) AS float64
-)
-			END AS mail_click,
-			CASE
-				WHEN DAY = 0 THEN 0
-				ELSE CAST(
-round(
-CAST(users AS float64)/ CAST(DAY AS float64),
-				0
-) AS float64
-)
-			END AS users,
-			CASE
-				WHEN mail_sent = 0 THEN 0
-				ELSE round(
-CAST(mail_open AS float64)/ CAST(mail_sent AS float64)* 100,
-				2
-)
-			END AS open_percent,
-			CASE
-				WHEN mail_sent = 0 THEN 0
-				ELSE round(
-CAST(mail_click AS float64)/ CAST(mail_open AS float64)* 100,
-				2
-)
-			END AS click_open_percent
-		FROM
-			(
-			SELECT
-				nl_name,
-				CASE
-					WHEN mon = EXTRACT(
-MONTH
-				FROM
-					DATE_SUB(
-Date(
-EXTRACT(
-YEAR
-				FROM
-					current_date()
-),
-					EXTRACT(
-MONTH
-				FROM
-					current_date()
-),
-					01
-),
-					INTERVAL 1 MONTH
-)
-) THEN 'M1'
-					WHEN mon = EXTRACT(
-MONTH
-				FROM
-					DATE_SUB(
-Date(
-EXTRACT(
-YEAR
-				FROM
-					current_date()
-),
-					EXTRACT(
-MONTH
-				FROM
-					current_date()
-),
-					01
-),
-					INTERVAL 2 MONTH
-)
-) THEN 'M2'
-					WHEN mon = EXTRACT(
-MONTH
-				FROM
-					DATE_SUB(
-Date(
-EXTRACT(
-YEAR
-				FROM
-					current_date()
-),
-					EXTRACT(
-MONTH
-				FROM
-					current_date()
-),
-					01
-),
-					INTERVAL 3 MONTH
-)
-) THEN 'M3'
-					WHEN mon = EXTRACT(
-MONTH
-				FROM
-					current_date()
-) THEN 'MTD'
-				END AS mon,
-				sum(mail_sent) AS mail_sent,
-				sum(mail_open) AS mail_open,
-				sum(mail_click) AS mail_click,
-				sum(users) AS users,
-				sum(DAY) AS DAY
-			FROM
-				(
-				SELECT
-					nl_name,
-					mon,
-					CASE
-						WHEN mail_sent != 0 THEN 1
-						ELSE 0
-					END AS DAY,
-					mail_sent,
-					mail_open,
-					mail_click,
-					users
-				FROM
-					(
-					SELECT
-						nl_name,
-						mon,
-						c_date,
-						sum(mail_sent) AS mail_sent,
-						sum(mail_open) AS mail_open,
-						sum(mail_click) AS mail_click,
-						sum(
-CASE WHEN mail_open != 0
-OR mail_click != 0 THEN 1 ELSE 0 END
-) AS users
-					FROM
-						(
-						SELECT
-							EXTRACT(
-MONTH
-						FROM
-							CAST(
-SUBSTR(
-CAST(
-datetime(__time,
-							'Asia/Kolkata') AS string
-),
-							1,
-							10
-) AS Date
-)
-) AS mon,
-							CAST(
-SUBSTR(
-CAST(
-datetime(__time,
-							'Asia/Kolkata') AS string
-),
-							1,
-							10
-) AS Date
-) AS c_date,
-							CASE
-								WHEN nl_name = 'News Digest'
-									AND tags IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest Static'
-									WHEN nl_name = 'News Digest'
-										AND tags NOT IN (
-'rejected_new_mailer', 'Rejected'
-) THEN 'News Digest ML Generated'
-										WHEN nl_name = 'ET RISE Biz Listings' THEN 'ET RISE'
-										ELSE nl_name
-									END AS nl_name,
-									email,
-									sum(
-CASE WHEN event_name = 'mail_sent' THEN 1 ELSE 0 END
-) AS mail_sent,
-									sum(
-CASE WHEN event_name = 'mail_open' THEN 1 ELSE 0 END
-) AS mail_open,
-									sum(
-CASE WHEN event_name = 'mail_click' THEN 1 ELSE 0 END
-) AS mail_click
-								FROM
-									`et-poc-042021. all_user.EtClientEvents`
-								WHERE
-									__time >= CAST (
-DATE_SUB(
-Date(
-EXTRACT(
-YEAR
-								FROM
-									current_date()
-),
-									EXTRACT(
-MONTH
-								FROM
-									current_date()
-),
-									01
-),
-									INTERVAL 3 MONTH
-) AS timestamp
-)
-									AND client_source = 'et_newsletter'
-									AND event_name IN (
-'mail_sent', 'mail_open', 'mail_click'
-)
-										AND nl_name NOT LIKE '%Test%'
-										AND (
-mailer_type IN ('NEWSLETTER')
-											OR nl_name IN ('News Digest')
-)
-											AND nl_name NOT IN (
-'ET Prime Promotions 2', 'ET Tech Promotional',
-'Promotional CSV Mailer: newsletter@notifications-economictimes.com',
-'ETtech Promotional Mailer', 'DeCrypt',
-'ETtech News Alert', 'On Board to ET CSV Mailer',
-'ET SmallBiz FMC', "ETPrime Today's Edition",
-'ET Promotions', 'ET Rise SME',
-'ET SmallBiz LUB', 'Unsubscription Mail',
-'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI',
-'Coronavirus Newsletter', 'ET Specials',
-'ET Specials (ET Engaged Users)',
-'ET Specials : (ALL ET Audience)',
-'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
-)
-										GROUP BY
-											1,
-											2,
-											3,
-											4
-)
-					GROUP BY
-						1,
-						2,
-						3
-)
-)
-			GROUP BY
-				1,
-				2
-) a
-) unpivot(
-val FOR properties IN (
-mail_sent, mail_open, mail_click,
-users, open_percent, click_open_percent
-)
-) AS upv
-) pivot (
-sum(val) FOR mon IN (
-'D2', 'D3', 'D4', 'last_7_days', 'MTD',
-'M1', 'M2', 'M3'
-)
-)
-)
+select 
+  * 
+except 
+  (properties), 
+  case when properties = 'mail_sent' then 'Sent' when properties = 'mail_open' then 'Open' when properties = 'mail_click' then 'Click' when properties = 'users' then 'Users' when properties = 'open_percent' then 'Open Rate' when properties = 'click_open_percent' then 'Click To Open Rate' end as properties, 
+  case when properties = 'mail_sent' then 1 when properties = 'mail_open' then 2 when properties = 'mail_click' then 3 when properties = 'users' then 4 when properties = 'open_percent' then 5 when properties = 'click_open_percent' then 6 end as prop_id 
+from 
+  (
+    select 
+      * 
+    from 
+      (
+        select 
+          nl_name, 
+          mon, 
+          val, 
+          properties 
+        from 
+          (
+            select 
+              *, 
+              case when mail_sent = 0 then 0 else round(
+                cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 
+                2
+              ) end as open_percent, 
+              case when mail_open = 0 then 0 else round(
+                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 
+                2
+              ) end as click_open_percent 
+            from 
+              (
+                select 
+                  a.nl_name, 
+                  case when c_date = current_date - 2 then 'D2' when c_date = current_date - 3 then 'D3' when c_date = current_date - 4 then 'D4' end as mon, 
+                  sum(mail_sent) as mail_sent, 
+                  sum(mail_open) as mail_open, 
+                  sum(mail_click) as mail_click, 
+                  sum(users) as users 
+                from 
+                  (
 ~~~
+### Query 1
+~~~		  
+                    SELECT 
+                      cast(
+                        SUBSTR(
+                          CAST(
+                            datetime(__time, 'Asia/Kolkata') AS string
+                          ), 
+                          1, 
+                          10
+                        ) as Date
+                      ) as c_date, 
+                      case when nl_name = 'News Digest' 
+                      and tags in (
+                        'rejected_new_mailer', 'Rejected'
+                      ) then 'News Digest Static' when nl_name = 'News Digest' 
+                      and tags not in (
+                        'rejected_new_mailer', 'Rejected'
+                      ) then 'News Digest ML Generated' when nl_name = 'ET RISE Biz Listings' then 'ET RISE' else nl_name end as nl_name, 
+                      nl_schedule_id, 
+                      count(*) as mail_sent 
+                    FROM 
+                      `et-poc-042021.all_user.EtClientEvents` 
+                    WHERE 
+                      __time >= cast(
+                        DATETIME_ADD(
+                          DATETIME_ADD(
+                            cast(current_date - 5 as datetime), 
+                            INTERVAL 18 HOUR
+                          ), 
+                          INTERVAL 30 Minute
+                        ) as timestamp
+                      ) 
+                      and __time < cast(
+                        DATETIME_ADD(
+                          DATETIME_ADD(
+                            cast(current_date - 2 as datetime), 
+                            INTERVAL 18 HOUR
+                          ), 
+                          INTERVAL 30 Minute
+                        ) as timestamp
+                      ) 
+                      and client_source = 'et_newsletter' 
+                      and event_name in ('mail_sent') 
+                      and nl_name not like '%Test%' 
+                      and (
+                        mailer_type in ('NEWSLETTER') 
+                        or nl_name in ('News Digest')
+                      ) 
+                      and nl_name not in (
+                        'ET Prime Promotions 2', 'ET Tech Promotional', 
+                        'Promotional CSV Mailer: newsletter@notifications-economictimes.com', 
+                        'ETtech Promotional Mailer', 'DeCrypt', 
+                        'ETtech News Alert', 'On Board to ET CSV Mailer', 
+                        'ET SmallBiz FMC', "ETPrime Today's Edition", 
+                        'ET Promotions', 'ET Rise SME', 
+                        'ET SmallBiz LUB', 'Unsubscription Mail', 
+                        'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI', 
+                        'Coronavirus Newsletter', 'ET Specials', 
+                        'ET Specials (ET Engaged Users)', 
+                        'ET Specials : (ALL ET Audience)', 
+                        'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
+                      ) 
+                    GROUP BY 
+                      1, 
+                      2, 
+                      3
+                  ) a 
+~~~		  
+~~~		  
+                  left join (
+~~~
+### Query 2 for Analysis
+~~~
+                    select 
+                      nl_name, 
+                      nl_schedule_id, 
+                      sum(mail_open) as mail_open, 
+                      sum(mail_click) as mail_click, 
+                      count(*) as users 
+                    from 
+                      (
+                        SELECT 
+                          case when nl_name = 'News Digest' 
+                          and tags in (
+                            'rejected_new_mailer', 'Rejected'
+                          ) then 'News Digest Static' when nl_name = 'News Digest' 
+                          and tags not in (
+                            'rejected_new_mailer', 'Rejected'
+                          ) then 'News Digest ML Generated' when nl_name = 'ET RISE Biz Listings' then 'ET RISE' else nl_name end as nl_name, 
+                          email, 
+                          nl_schedule_id, 
+                          sum(
+                            case when event_name = 'mail_open' then 1 else 0 end
+                          ) as mail_open, 
+                          sum(
+                            case when event_name = 'mail_click' then 1 else 0 end
+                          ) as mail_click 
+                        FROM 
+                          `et-poc-042021.all_user.EtClientEvents` 
+                        WHERE 
+                          __time > cast(
+                            DATETIME_ADD(
+                              DATETIME_ADD(
+                                cast(current_date - 5 as datetime), 
+                                INTERVAL 18 HOUR
+                              ), 
+                              INTERVAL 30 Minute
+                            ) as timestamp
+                          ) 
+                          and client_source = 'et_newsletter' 
+                          and event_name in ('mail_open', 'mail_click') 
+                          and nl_name not like '%Test%' 
+                          and (
+                            mailer_type in ('NEWSLETTER') 
+                            or nl_name in ('News Digest')
+                          ) 
+                          and nl_name not in (
+                            'ET Prime Promotions 2', 'ET Tech Promotional', 
+                            'Promotional CSV Mailer: newsletter@notifications-economictimes.com', 
+                            'ETtech Promotional Mailer', 'DeCrypt', 
+                            'ETtech News Alert', 'On Board to ET CSV Mailer', 
+                            'ET SmallBiz FMC', "ETPrime Today's Edition", 
+                            'ET Promotions', 'ET Rise SME', 
+                            'ET SmallBiz LUB', 'Unsubscription Mail', 
+                            'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI', 
+                            'Coronavirus Newsletter', 'ET Specials', 
+                            'ET Specials (ET Engaged Users)', 
+                            'ET Specials : (ALL ET Audience)', 
+                            'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
+                          ) 
+                        GROUP BY 
+                          1, 
+                          2, 
+                          3
+                      ) 
+                    group by 
+                      1, 
+                      2
+                  ) b
+~~~		  
+~~~
+		  on a.nl_schedule_id = b.nl_schedule_id 
+                  and cast(a.nl_name as string)= cast(b.nl_name as string) 
+                group by 
+                  1, 
+                  2
+              ) 
+            where 
+              mail_sent > 5
+~~~
+~~~
+            union all 
+            select 
+              nl_name, 
+              'last_7_days' as mon, 
+              cast(
+                round(
+                  cast(mail_sent as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) as mail_sent, 
+              cast(
+                round(
+                  cast(mail_open as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) as mail_open, 
+              cast(
+                round(
+                  cast(mail_click as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) as mail_click, 
+              cast(
+                round(
+                  cast(users as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) as users, 
+              case when mail_sent = 0 then 0 else round(
+                cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 
+                2
+              ) end as open_percent, 
+              case when mail_open = 0 then 0 else round(
+                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 
+                2
+              ) end as click_open_percent 
+            from 
+              (
+                select 
+                  nl_name, 
+                  sum(mail_sent) as mail_sent, 
+                  sum(mail_open) as mail_open, 
+                  sum(mail_click) as mail_click, 
+                  sum(users) as users, 
+                  sum(day) as day 
+                from 
+                  (
+                    select 
+                      nl_name, 
+                      case when mail_sent != 0 then 1 else 0 end as day, 
+                      mail_sent, 
+                      mail_open, 
+                      mail_click, 
+                      users 
+                    from 
+                      (
+                        select 
+                          c_date, 
+                          nl_name, 
+                          sum(mail_sent) as mail_sent, 
+                          sum(mail_open) as mail_open, 
+                          sum(mail_click) as mail_click, 
+                          sum(
+                            case when mail_open != 0 
+                            or mail_click != 0 then 1 else 0 end
+                          ) as users 
+                        from 
+                          (
+                            SELECT 
+                              cast(
+                                SUBSTR(
+                                  CAST(
+                                    datetime(__time, 'Asia/Kolkata') AS string
+                                  ), 
+                                  1, 
+                                  10
+                                ) as Date
+                              ) as c_date, 
+                              case when nl_name = 'News Digest' 
+                              and tags in (
+                                'rejected_new_mailer', 'Rejected'
+                              ) then 'News Digest Static' when nl_name = 'News Digest' 
+                              and tags not in (
+                                'rejected_new_mailer', 'Rejected'
+                              ) then 'News Digest ML Generated' when nl_name = 'ET RISE Biz Listings' then 'ET RISE' else nl_name end as nl_name, 
+                              email, 
+                              sum(
+                                case when event_name = 'mail_sent' then 1 else 0 end
+                              ) as mail_sent, 
+                              sum(
+                                case when event_name = 'mail_open' then 1 else 0 end
+                              ) as mail_open, 
+                              sum(
+                                case when event_name = 'mail_click' then 1 else 0 end
+                              ) as mail_click 
+                            FROM 
+                              `et-poc-042021.all_user.EtClientEvents` 
+                            WHERE 
+                              __time >= cast(current_date - 7 as timestamp) 
+                              and client_source = 'et_newsletter' 
+                              and event_name in (
+                                'mail_sent', 'mail_open', 'mail_click'
+                              ) 
+                              and nl_name not like '%Test%' 
+                              and (
+                                mailer_type in ('NEWSLETTER') 
+                                or nl_name in ('News Digest')
+                              ) 
+                              and nl_name not in (
+                                'ET Prime Promotions 2', 'ET Tech Promotional', 
+                                'Promotional CSV Mailer: newsletter@notifications-economictimes.com', 
+                                'ETtech Promotional Mailer', 'DeCrypt', 
+                                'ETtech News Alert', 'On Board to ET CSV Mailer', 
+                                'ET SmallBiz FMC', "ETPrime Today's Edition", 
+                                'ET Promotions', 'ET Rise SME', 
+                                'ET SmallBiz LUB', 'Unsubscription Mail', 
+                                'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI', 
+                                'Coronavirus Newsletter', 'ET Specials', 
+                                'ET Specials (ET Engaged Users)', 
+                                'ET Specials : (ALL ET Audience)', 
+                                'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
+                              ) 
+                            GROUP BY 
+                              1, 
+                              2, 
+                              3
+                          ) 
+                        group by 
+                          1, 
+                          2
+                      )
+                  ) 
+                group by 
+                  1
+              ) 
+            where 
+              mail_sent != 0 
+            union all 
+            select 
+              a.nl_name, 
+              a.mon, 
+              case when day = 0 then 0 else cast(
+                round(
+                  cast(mail_sent as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) end as mail_sent, 
+              case when day = 0 then 0 else cast(
+                round(
+                  cast(mail_open as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) end as mail_open, 
+              case when day = 0 then 0 else cast(
+                round(
+                  cast(mail_click as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) end as mail_click, 
+              case when day = 0 then 0 else cast(
+                round(
+                  cast(users as float64)/ cast(day as float64), 
+                  0
+                ) as float64
+              ) end as users, 
+              case when mail_sent = 0 then 0 else round(
+                cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 
+                2
+              ) end as open_percent, 
+              case when mail_sent = 0 then 0 else round(
+                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 
+                2
+              ) end as click_open_percent 
+            from 
+              (
+                select 
+                  nl_name, 
+                  case when mon = extract(
+                    month 
+                    from 
+                      DATE_SUB(
+                        Date(
+                          extract(
+                            year 
+                            from 
+                              current_date()
+                          ), 
+                          extract(
+                            month 
+                            from 
+                              current_date()
+                          ), 
+                          01
+                        ), 
+                        INTERVAL 1 MONTH
+                      )
+                  ) then 'M1' when mon = extract(
+                    month 
+                    from 
+                      DATE_SUB(
+                        Date(
+                          extract(
+                            year 
+                            from 
+                              current_date()
+                          ), 
+                          extract(
+                            month 
+                            from 
+                              current_date()
+                          ), 
+                          01
+                        ), 
+                        INTERVAL 2 MONTH
+                      )
+                  ) then 'M2' when mon = extract(
+                    month 
+                    from 
+                      DATE_SUB(
+                        Date(
+                          extract(
+                            year 
+                            from 
+                              current_date()
+                          ), 
+                          extract(
+                            month 
+                            from 
+                              current_date()
+                          ), 
+                          01
+                        ), 
+                        INTERVAL 3 MONTH
+                      )
+                  ) then 'M3' when mon = extract(
+                    month 
+                    from 
+                      current_date()
+                  ) then 'MTD' end as mon, 
+                  sum(mail_sent) as mail_sent, 
+                  sum(mail_open) as mail_open, 
+                  sum(mail_click) as mail_click, 
+                  sum(users) as users, 
+                  sum(day) as day 
+                from 
+                  (
+                    select 
+                      nl_name, 
+                      mon, 
+                      case when mail_sent != 0 then 1 else 0 end as day, 
+                      mail_sent, 
+                      mail_open, 
+                      mail_click, 
+                      users 
+                    from 
+                      (
+                        select 
+                          nl_name, 
+                          mon, 
+                          c_date, 
+                          sum(mail_sent) as mail_sent, 
+                          sum(mail_open) as mail_open, 
+                          sum(mail_click) as mail_click, 
+                          sum(
+                            case when mail_open != 0 
+                            or mail_click != 0 then 1 else 0 end
+                          ) as users 
+                        from 
+                          (
+                            SELECT 
+                              extract(
+                                month 
+                                from 
+                                  cast(
+                                    SUBSTR(
+                                      CAST(
+                                        datetime(__time, 'Asia/Kolkata') AS string
+                                      ), 
+                                      1, 
+                                      10
+                                    ) as Date
+                                  )
+                              ) as mon, 
+                              cast(
+                                SUBSTR(
+                                  CAST(
+                                    datetime(__time, 'Asia/Kolkata') AS string
+                                  ), 
+                                  1, 
+                                  10
+                                ) as Date
+                              ) as c_date, 
+                              case when nl_name = 'News Digest' 
+                              and tags in (
+                                'rejected_new_mailer', 'Rejected'
+                              ) then 'News Digest Static' when nl_name = 'News Digest' 
+                              and tags not in (
+                                'rejected_new_mailer', 'Rejected'
+                              ) then 'News Digest ML Generated' when nl_name = 'ET RISE Biz Listings' then 'ET RISE' else nl_name end as nl_name, 
+                              email, 
+                              sum(
+                                case when event_name = 'mail_sent' then 1 else 0 end
+                              ) as mail_sent, 
+                              sum(
+                                case when event_name = 'mail_open' then 1 else 0 end
+                              ) as mail_open, 
+                              sum(
+                                case when event_name = 'mail_click' then 1 else 0 end
+                              ) as mail_click 
+                            FROM 
+                              `et-poc-042021.all_user.EtClientEvents` 
+                            WHERE 
+                              __time >= cast (
+                                DATE_SUB(
+                                  Date(
+                                    extract(
+                                      year 
+                                      from 
+                                        current_date()
+                                    ), 
+                                    extract(
+                                      month 
+                                      from 
+                                        current_date()
+                                    ), 
+                                    01
+                                  ), 
+                                  INTERVAL 3 MONTH
+                                ) as timestamp
+                              ) 
+                              and client_source = 'et_newsletter' 
+                              and event_name in (
+                                'mail_sent', 'mail_open', 'mail_click'
+                              ) 
+                              and nl_name not like '%Test%' 
+                              and (
+                                mailer_type in ('NEWSLETTER') 
+                                or nl_name in ('News Digest')
+                              ) 
+                              and nl_name not in (
+                                'ET Prime Promotions 2', 'ET Tech Promotional', 
+                                'Promotional CSV Mailer: newsletter@notifications-economictimes.com', 
+                                'ETtech Promotional Mailer', 'DeCrypt', 
+                                'ETtech News Alert', 'On Board to ET CSV Mailer', 
+                                'ET SmallBiz FMC', "ETPrime Today's Edition", 
+                                'ET Promotions', 'ET Rise SME', 
+                                'ET SmallBiz LUB', 'Unsubscription Mail', 
+                                'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI', 
+                                'Coronavirus Newsletter', 'ET Specials', 
+                                'ET Specials (ET Engaged Users)', 
+                                'ET Specials : (ALL ET Audience)', 
+                                'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
+                              ) 
+                            GROUP BY 
+                              1, 
+                              2, 
+                              3, 
+                              4
+                          ) 
+                        group by 
+                          1, 
+                          2, 
+                          3
+                      )
+                  ) 
+                group by 
+                  1, 
+                  2
+              ) a
+          ) unpivot(
+            val for properties in (
+              mail_sent, mail_open, mail_click, 
+              users, open_percent, click_open_percent
+            )
+          ) as upv
+      ) pivot (
+        sum(val) for mon in (
+          'D2', 'D3', 'D4', 'last_7_days', 'MTD', 
+          'M1', 'M2', 'M3'
+        )
+      )
+  )
+~~~
+
 
 ## Analysis 
 #### Query Execution 1 in Druid
 - 70 results in 1.00s
+
 ~~~
+
 SELECT
 	SUBSTRING(TIME_FORMAT(__time), 1, 10)  AS "c_date",
 	CASE
