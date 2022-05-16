@@ -646,3 +646,39 @@ sum(val) FOR mon IN (
 )
 )
 ~~~
+
+## Analysis 
+#### Query Execution 1 in Druid
+- 70 results in 1.00s
+~~~
+SELECT
+	SUBSTRING(TIME_FORMAT(__time), 1, 10)  AS "c_date",
+	CASE
+		WHEN nl_name = 'News Digest'
+		AND tags IN ('rejected_new_mailer', 'Rejected') THEN 'News Digest Static'
+		WHEN nl_name = 'News Digest'
+		AND tags NOT IN ('rejected_new_mailer', 'Rejected') THEN 'News Digest ML Generated'
+		WHEN nl_name = 'ET RISE Biz Listings' THEN 'ET RISE'
+		ELSE nl_name
+	END AS nl_name,
+	nl_schedule_id,
+	count(*) AS mail_sent
+FROM
+	ETClientEvents
+WHERE
+	__time >= CURRENT_TIMESTAMP - INTERVAL '5' DAY 
+	AND __time < CURRENT_TIMESTAMP - INTERVAL '2' DAY 
+	AND client_source = 'et_newsletter'
+	AND event_name IN ('mail_sent')
+	AND nl_name NOT LIKE '%Test%'
+	AND (mailer_type IN ('NEWSLETTER')
+		OR nl_name IN ('News Digest'))
+	AND nl_name NOT IN ('ET Prime Promotions 2', 'ET Tech Promotional', 'Promotional CSV Mailer: newsletter@notifications-economictimes.com',
+'ETtech Promotional Mailer', 'DeCrypt', 'ETtech News Alert', 
+'On Board to ET CSV Mailer', 'ET SmallBiz FMC', --"ETPrime Today\'s Edition",
+'ET Promotions', 'ET Rise SME', 'ET SmallBiz LUB', 'Unsubscription Mail', 
+'ET SmallBiz MSMEDF', 'ET SmallBiz GCCI', 'Coronavirus Newsletter', 'ET Specials',
+'ET Specials (ET Engaged Users)', 'ET Specials : (ALL ET Audience)', 
+'ET Prime Promotions', 'ET Specials (ET Engaged Users) ')
+GROUP BY 1, 2, 3
+~~~
