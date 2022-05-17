@@ -61,14 +61,9 @@ from
           (
             select 
               *, 
-              case when mail_sent = 0 then 0 else round(
-                cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 
-                2
-              ) end as open_percent, 
+              case when mail_sent = 0 then 0 else round(cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 2) end as open_percent, 
               case when mail_open = 0 then 0 else round(
-                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 
-                2
-              ) end as click_open_percent 
+                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 2) end as click_open_percent 
             from 
               (
                 select 
@@ -81,15 +76,7 @@ from
                 from 
                   (
                     SELECT 
-                      cast(
-                        SUBSTR(
-                          CAST(
-                            datetime(__time, 'Asia/Kolkata') AS string
-                          ), 
-                          1, 
-                          10
-                        ) as Date
-                      ) as c_date, 
+                      cast(SUBSTR(CAST(datetime(__time, 'Asia/Kolkata') AS string), 1, 10) as Date) as c_date, 
                       case when nl_name = 'News Digest' 
                       and tags in (
                         'rejected_new_mailer', 'Rejected'
@@ -102,24 +89,8 @@ from
                     FROM 
                       `et-poc-042021.all_user.EtClientEvents` 
                     WHERE 
-                      __time >= cast(
-                        DATETIME_ADD(
-                          DATETIME_ADD(
-                            cast(current_date - 5 as datetime), 
-                            INTERVAL 18 HOUR
-                          ), 
-                          INTERVAL 30 Minute
-                        ) as timestamp
-                      ) 
-                      and __time < cast(
-                        DATETIME_ADD(
-                          DATETIME_ADD(
-                            cast(current_date - 2 as datetime), 
-                            INTERVAL 18 HOUR
-                          ), 
-                          INTERVAL 30 Minute
-                        ) as timestamp
-                      ) 
+                      __time >= cast(DATETIME_ADD(DATETIME_ADD(cast(current_date - 5 as datetime), INTERVAL 18 HOUR), INTERVAL 30 Minute) as timestamp) 
+                      and __time < cast(DATETIME_ADD(DATETIME_ADD(cast(current_date - 2 as datetime), INTERVAL 18 HOUR), INTERVAL 30 Minute) as timestamp) 
                       and client_source = 'et_newsletter' 
                       and event_name in ('mail_sent') 
                       and nl_name not like '%Test%' 
@@ -141,11 +112,7 @@ from
                         'ET Specials : (ALL ET Audience)', 
                         'ET Prime Promotions', 'ET Specials (ET Engaged Users) '
                       ) 
-                    GROUP BY 
-                      1, 
-                      2, 
-                      3
-                  ) a 
+                    GROUP BY 1, 2, 3) a 
                   left join (
                     select 
                       nl_name, 
@@ -174,15 +141,7 @@ from
                         FROM 
                           `et-poc-042021.all_user.EtClientEvents` 
                         WHERE 
-                          __time > cast(
-                            DATETIME_ADD(
-                              DATETIME_ADD(
-                                cast(current_date - 5 as datetime), 
-                                INTERVAL 18 HOUR
-                              ), 
-                              INTERVAL 30 Minute
-                            ) as timestamp
-                          ) 
+                          __time > cast(DATETIME_ADD(DATETIME_ADD(cast(current_date - 5 as datetime), INTERVAL 18 HOUR), INTERVAL 30 Minute) as timestamp) 
                           and client_source = 'et_newsletter' 
                           and event_name in ('mail_open', 'mail_click') 
                           and nl_name not like '%Test%' 
@@ -224,38 +183,15 @@ from
             select 
               nl_name, 
               'last_7_days' as mon, 
+              cast(round(cast(mail_sent as float64)/ cast(day as float64), 0) as float64) as mail_sent, 
+              cast(round(cast(mail_open as float64)/ cast(day as float64), 0) as float64) as mail_open, 
+              cast(round(cast(mail_click as float64)/ cast(day as float64), 0) as float64) as mail_click, 
               cast(
-                round(
-                  cast(mail_sent as float64)/ cast(day as float64), 
-                  0
-                ) as float64
-              ) as mail_sent, 
-              cast(
-                round(
-                  cast(mail_open as float64)/ cast(day as float64), 
-                  0
-                ) as float64
-              ) as mail_open, 
-              cast(
-                round(
-                  cast(mail_click as float64)/ cast(day as float64), 
-                  0
-                ) as float64
-              ) as mail_click, 
-              cast(
-                round(
-                  cast(users as float64)/ cast(day as float64), 
-                  0
-                ) as float64
-              ) as users, 
+                round(cast(users as float64)/ cast(day as float64), 0) as float64) as users, 
               case when mail_sent = 0 then 0 else round(
-                cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 
-                2
-              ) end as open_percent, 
+                cast(mail_open as float64)/ cast(mail_sent as float64)* 100, 2) end as open_percent, 
               case when mail_open = 0 then 0 else round(
-                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 
-                2
-              ) end as click_open_percent 
+                cast(mail_click as float64)/ cast(mail_open as float64)* 100, 2) end as click_open_percent 
             from 
               (
                 select 
