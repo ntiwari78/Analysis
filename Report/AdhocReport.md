@@ -1,6 +1,6 @@
 - [Adhoc Query](#adhoc-query)
-  * [Query-1 Objective - To find the engagement of users who subscribed in jan](#query-1--objective--to-find-the-engagement-of-users-who-subscribed-in-jan)
-  * [Query-2: Objective: To find the Newsletter engagement  and section wise engagement of users who subscribed in jan](#query-2--objective--to-find-the-newsletter-engagement--and-section-wise-engagement-of-users-who-subscribed-in-jan)
+  * [Query1 Objective:To find the engagement of users who subscribed in jan](#query1-objective-to-find-the-engagement-of-users-who-subscribed-in-jan)
+  * [Query2 Objective: To find the Newsletter engagement  and section wise engagement of users who subscribed in jan](#query2-objective--to-find-the-newsletter-engagement--and-section-wise-engagement-of-users-who-subscribed-in-jan)
   * [Query-3: Objective: Day Wise Engagement of yearly plan paid users in March 2021](#query-3--objective--day-wise-engagement-of-yearly-plan-paid-users-in-march-2021)
   * [Query-4: Objective: Query is used to analyze what behavior of users help to increase propensity to convert on different metrics:](#query-4--objective--query-is-used-to-analyze-what-behavior-of-users-help-to-increase-propensity-to-convert-on-different-metrics-)
   * [Query-5: Objective: To find the daywise users on mweb unique based on there email and gid](#query-5--objective--to-find-the-daywise-users-on-mweb-unique-based-on-there-email-and-gid)
@@ -25,7 +25,7 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-## Query-1 Objective - To find the engagement of users who subscribed in jan 
+## Query1 Objective:To find the engagement of users who subscribed in jan 
 ~~~
 select 
   a.c_date, 
