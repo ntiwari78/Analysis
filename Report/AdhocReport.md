@@ -1,5 +1,5 @@
-- [ADHOC QUERIES](#adhoc-queries)
-  * [Query 1 To find the engagement of users who subscribed in jan](#query-1--objective--to-find-the-engagement-of-users-who-subscribed-in-jan)
+- [Adhoc Query](#adhoc-query)
+  * [Query-1: Objective: To find the engagement of users who subscribed in jan](#query-1--objective--to-find-the-engagement-of-users-who-subscribed-in-jan)
   * [Query-2: Objective: To find the Newsletter engagement  and section wise engagement of users who subscribed in jan](#query-2--objective--to-find-the-newsletter-engagement--and-section-wise-engagement-of-users-who-subscribed-in-jan)
   * [Query-3: Objective: Day Wise Engagement of yearly plan paid users in March 2021](#query-3--objective--day-wise-engagement-of-yearly-plan-paid-users-in-march-2021)
   * [Query-4: Objective: Query is used to analyze what behavior of users help to increase propensity to convert on different metrics:](#query-4--objective--query-is-used-to-analyze-what-behavior-of-users-help-to-increase-propensity-to-convert-on-different-metrics-)
@@ -9,6 +9,9 @@
   * [Query-8: Objective: Queries used to Analyze the movement of users from one user engagement bucket to another in different months](#query-8--objective--queries-used-to-analyze-the-movement-of-users-from-one-user-engagement-bucket-to-another-in-different-months)
   * [Query-9: Objective: Query used to generate the links which is used on different pages on  desktop which in return increase the visibility of pages on web browsers](#query-9--objective--query-used-to-generate-the-links-which-is-used-on-different-pages-on--desktop-which-in-return-increase-the-visibility-of-pages-on-web-browsers)
   * [Final Query for interlinking data](#final-query-for-interlinking-data)
+  * [Query-10: Objective:To Analyze the user’s watchlist and portfolio addition behavior](#query-10--objective-to-analyze-the-user-s-watchlist-and-portfolio-addition-behavior)
+  * [Query-11: Objective: To Analyze the behavior of loyal free users based on city](#query-11--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-city)
+  * [Query-12: Objective:To Analyze the behavior of loyal free users based on platform wise](#query-12--objective-to-analyze-the-behavior-of-loyal-free-users-based-on-platform-wise)
   * [Query-13: Objective: To Analyze the behavior of loyal free users based on Source wise](#query-13--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-source-wise)
   * [Query-14: Objective: To Analyze the behavior of loyal free users based on Site section wise excluding app](#query-14--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-site-section-wise-excluding-app)
   * [Query-15: Objective: To Analyze the behavior of loyal free users based on Page Template wise excluding app](#query-15--objective--to-analyze-the-behavior-of-loyal-free-users-based-on-page-template-wise-excluding-app)
@@ -5442,9 +5445,7 @@ order by 1,4 desc
 ~~~
  
  
-## Query-10:
-
-## Objective:To Analyze the user’s watchlist and portfolio addition behavior
+## Query-10: Objective:To Analyze the user’s watchlist and portfolio addition behavior
  
  ~~~
 select case when a.company_name is null then b.company_name else a.company_name end as company_name,
@@ -5470,9 +5471,7 @@ group by 1,2) b on a.company_name=b.company_name
 ~~~ 
  
  
-## Query-11:
-
-## Objective: To Analyze the behavior of loyal free users based on city
+## Query-11: Objective: To Analyze the behavior of loyal free users based on city
 ~~~
 select mon,city,count(*) from
 (select a.mon,a.user,city from
@@ -5510,9 +5509,7 @@ group by 1,2,3) group by 1,2
 order by 1,3
 ~~~
 
-## Query-12:
-
-## Objective:To Analyze the behavior of loyal free users based on platform wise
+## Query-12: Objective:To Analyze the behavior of loyal free users based on platform wise
  
  ~~~
 select mon,platform,count(*) from
